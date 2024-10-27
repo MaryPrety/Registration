@@ -46,7 +46,6 @@ class _LoginPageState extends State<LoginPage> {
   String? _savedGender = 'М';
   String? _savedAvatarUrl = 'https://i.pinimg.com/736x/36/d8/5a/36d85aa74c895789fdb04c86ac69550e.jpg';
 
-
   void _saveProfile() {
     setState(() {
       _savedFullName = _fullNameController.text;

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/manga_item.dart';
 import '../providers/favorite_provider.dart';
 import '../providers/cart_provider.dart'; // Импортируем CartProvider
+import '../services/api_service.dart'; // Импортируем ApiService
 
 class MangaDetailsScreen extends StatelessWidget {
   final String title;
@@ -57,6 +58,7 @@ class MangaDetailsScreen extends StatelessWidget {
     final cartProvider = Provider.of<CartProvider>(context); // Добавляем CartProvider
 
     final mangaItem = MangaItem(
+      id: 0, // Пустой id, так как сервер его сгенерирует
       imagePath: imagePath,
       title: title,
       description: description,
@@ -125,6 +127,9 @@ class MangaDetailsScreen extends StatelessWidget {
                             imagePath,
                             width: isMobile ? 120 : 250,
                             fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(child: Text('Ошибка загрузки изображения'));
+                            },
                           ),
                         ),
                         const SizedBox(height: 50),
@@ -174,6 +179,9 @@ class MangaDetailsScreen extends StatelessWidget {
                                   width: isMobile ? 50 : 80,
                                   height: isMobile ? 50 : 80,
                                   fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Center(child: Text('Ошибка загрузки изображения'));
+                                  },
                                 ),
                               ),
                             );
@@ -215,7 +223,7 @@ class MangaDetailsScreen extends StatelessWidget {
               const SizedBox(height: 30),
               ElevatedButton(
                 onPressed: () {
-                  _showDeleteConfirmationDialog(context);
+                  _showDeleteConfirmationDialog(context, mangaItem);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFC84B31),
@@ -302,7 +310,7 @@ class MangaDetailsScreen extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context) {
+  void _showDeleteConfirmationDialog(BuildContext context, MangaItem mangaItem) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -318,11 +326,20 @@ class MangaDetailsScreen extends StatelessWidget {
             ),
             TextButton(
               child: const Text('Удалить'),
-              onPressed: () {
-                onDelete(); // Вызываем функцию удаления
-                Navigator.of(context).pop(); // Закрываем диалоговое окно
-                Navigator.pop(context); // Возвращаемся на предыдущий экран
-                Navigator.pushReplacementNamed(context, '/home'); // Переходим на главное меню
+              onPressed: () async {
+                try {
+                  await ApiService().deleteProduct(mangaItem.id); // Удаляем товар через API
+                  onDelete(); // Вызываем функцию удаления
+                  Navigator.of(context).pop(); // Закрываем диалоговое окно
+                  Navigator.pop(context); // Возвращаемся на предыдущий экран
+                  Navigator.pushReplacementNamed(context, '/home'); // Переходим на главное меню
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Ошибка при удалении товара: $e'),
+                    ),
+                  );
+                }
               },
             ),
           ],

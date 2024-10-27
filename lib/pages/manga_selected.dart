@@ -86,15 +86,15 @@ class MangaSelectedPage extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => MangaDetailsScreen(
-              title: manga.title,
-              price: manga.price,
+              title: manga.title ?? '',
+              price: manga.price ?? '',
               index: index,
-              additionalImages: manga.additionalImages,
-              description: manga.description,
-              format: manga.format,
-              publisher: manga.publisher,
-              imagePath: manga.imagePath,
-              chapters: manga.chapters,
+              additionalImages: manga.additionalImages ?? [],
+              description: manga.description ?? '',
+              format: manga.format ?? '',
+              publisher: manga.publisher ?? '',
+              imagePath: manga.imagePath ?? '',
+              chapters: manga.chapters ?? '',
               onDelete: () {
                 favoriteProvider.removeFromFavorites(manga); // Логика удаления
               },
@@ -121,7 +121,7 @@ class MangaSelectedPage extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(28),
                   child: Image.network(
-                    manga.imagePath,
+                    manga.imagePath ?? '',
                     fit: BoxFit.cover,
                     width: isMobile ? screenWidth * 0.3 : 160,
                     height: isMobile ? screenWidth * 0.45 : 280,
@@ -138,7 +138,7 @@ class MangaSelectedPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          manga.title,
+                          manga.title ?? '',
                           style: TextStyle(
                             fontSize: titleFontSize, // Плавное уменьшение шрифта заголовка
                             color: const Color(0xFF2D4263),
@@ -146,7 +146,7 @@ class MangaSelectedPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          manga.description,
+                          manga.description ?? '',
                           style: TextStyle(
                             fontSize: descriptionFontSize, // Плавное уменьшение шрифта описания
                             color: const Color(0xFF2D4263),
@@ -157,7 +157,7 @@ class MangaSelectedPage extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          manga.price,
+                          manga.price ?? '',
                           style: TextStyle(
                             fontSize: priceFontSize, // Плавное уменьшение шрифта цены
                             color: const Color(0xFF2D4263),

@@ -81,7 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
         children: _pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
-
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -94,29 +93,38 @@ class _MyHomePageState extends State<MyHomePage> {
             backgroundColor: Color.fromRGBO(45, 66, 99, 1),
           ),
           BottomNavigationBarItem(
-              icon: Stack(
-                alignment: Alignment.center, // Центрируем элементы
-                children: [
-                  Icon(Icons.shopping_cart), // Кнопка корзины
-                  if (totalCartItems > 0)
-                    Positioned(
-                      left: 9,
-                      bottom: 6.3, // Позиционируем по центру
+            icon: Stack(
+              alignment: Alignment.center, // Центрируем элементы
+              children: [
+                Icon(Icons.shopping_cart), // Кнопка корзины
+                if (totalCartItems > 0)
+                  Positioned(
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
                       child: Text(
                         '$totalCartItems',
-                        style: TextStyle(
-                          color: _selectedIndex == 2 ? const Color(0xFFECDBBA)   : const Color(0xFFC84B31), // Меняем цвет цифры
-                          fontSize: 12, // Размер шрифта
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
                         ),
                         textAlign: TextAlign.center,
                       ),
                     ),
-                ],
-              ),
-              label: 'Корзина',
-              backgroundColor: Color.fromRGBO(45, 66, 99, 1),
+                  ),
+              ],
             ),
-
+            label: 'Корзина',
+            backgroundColor: Color.fromRGBO(45, 66, 99, 1),
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Авторизация',

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import '../models/manga_item.dart';
+import '../services/api_service.dart';
 
 // Константы для цветов и размеров
 const Color primaryColor = Color(0xFFC84B31);
@@ -13,6 +15,10 @@ const double defaultRadius = 10.0;
 const double defaultTextSize = 14.0;
 
 class UploadNewVolumePage extends StatefulWidget {
+  final ValueChanged<MangaItem?> onItemCreated;
+
+  const UploadNewVolumePage({Key? key, required this.onItemCreated}) : super(key: key);
+
   @override
   _UploadNewVolumePageState createState() => _UploadNewVolumePageState();
 }
@@ -27,7 +33,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
   final TextEditingController _publisherController = TextEditingController();
   final List<String> _imageLinks = [];
 
-  
   final List<String> formatTexts = [
     'Твердый переплет\nФормат издания 19.6 x 12.5 см\nкол-во стр от 380 до 400',
     'Мягкий переплет\nФормат издания 18.0 x 11.0 см\nкол-во стр от 350 до 370',
@@ -125,9 +130,10 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
            _imageLinks.isNotEmpty;
   }
 
-  void _submit() {
+  void _submit() async {
     if (_validateInputs()) {
       final newMangaItem = MangaItem(
+        id: 0, // Пустой id, так как сервер его сгенерирует
         imagePath: _imageLinks.isNotEmpty ? _imageLinks[0] : '',
         title: _volumeController.text,
         description: _fullDescriptionController.text,
@@ -139,7 +145,15 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
         chapters: _chaptersController.text, 
       );
 
-      Navigator.pop(context, newMangaItem);
+      try {
+        final createdItem = await ApiService().createProduct(newMangaItem);
+        widget.onItemCreated(createdItem);
+        Navigator.pop(context, createdItem); // Возвращаем созданный товар
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка при создании товара: $error')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Пожалуйста, заполните все поля и добавьте хотя бы одно изображение")),
@@ -248,7 +262,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
     );
   }
 
-
   Widget _buildInputField(String label, TextEditingController controller, {String? hintText}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +271,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
           style: const TextStyle(
             color: textColor,
             fontSize: 16.0,
-            
           ),
         ),
         const SizedBox(height: 5),
@@ -276,7 +288,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
           ),
           style: const TextStyle(
             color: textColor,
-            
             fontSize: defaultTextSize,
             fontFamily: 'Tektur',
           ),
@@ -284,7 +295,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
       ],
     );
   }
-
 
   Widget _buildDropdownField(String label, TextEditingController controller, List<String> items) {
     return Column(
@@ -295,7 +305,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
           style: const TextStyle(
             color: secondaryColor,
             fontSize: 14.0,
-            
           ),
         ),
         const SizedBox(height: 5),
@@ -327,7 +336,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
           ),
           style: const TextStyle(
             color: textColor,
-            
             fontSize: defaultTextSize,
             fontFamily: 'Tektur',
           ),
@@ -335,7 +343,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
       ],
     );
   }
-
 
   Widget _buildTextArea(String label, TextEditingController controller, {required double height, String? hintText}) {
     return Column(
@@ -346,7 +353,6 @@ class _UploadNewVolumePageState extends State<UploadNewVolumePage> {
           style: const TextStyle(
             color: secondaryColor,
             fontSize: 16.0,
-            
           ),
         ),
         const SizedBox(height: 5),

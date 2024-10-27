@@ -6,6 +6,7 @@ class MangaCard extends StatelessWidget {
   final String description;
   final String price;
   final VoidCallback onTap;
+  final VoidCallback onAddToFavorite; // Новый параметр для добавления в избранное
 
   const MangaCard({
     Key? key,
@@ -14,6 +15,7 @@ class MangaCard extends StatelessWidget {
     required this.description,
     required this.price,
     required this.onTap,
+    required this.onAddToFavorite, // Добавляем новый параметр
   }) : super(key: key);
 
   @override
@@ -79,6 +81,12 @@ class MangaCard extends StatelessWidget {
                       fontSize: priceFontSize, // Плавное уменьшение шрифта цены
                       color: const Color(0xFF2D4263),
                     ),
+                  ),
+                  const SizedBox(height: 10),
+                  IconButton(
+                    icon: Icon(Icons.favorite_border), // Иконка избранного
+                    onPressed: onAddToFavorite, // Вызов колбека при нажатии
+                    tooltip: 'Добавить в избранное',
                   ),
                 ],
               ),

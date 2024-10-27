@@ -19,7 +19,6 @@ class _CartPageState extends State<CartPage> {
     final cartItems = cartProvider.cartItems;
 
     return Scaffold(
-      
       body: Container(
         color: const Color(0xFF191919), // Темно-черный фон
         child: Padding(
@@ -70,31 +69,29 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
- Widget _buildSlidableCartItemCard(BuildContext context, MangaItem item, CartProvider cartProvider) {
-  return Slidable(
-    key: Key(item.title),
-    endActionPane: ActionPane(
-      motion: ScrollMotion(),
-      children: [
-        SlidableAction(
-          onPressed: (context) {
-            setState(() {
-              _dismissedItems.add(item);
-              cartProvider.removeFromCart(item);
-            });
-          },
-          backgroundColor: Colors.transparent,
-          foregroundColor: const Color(0xFFC84B31),
-          icon: Icons.delete,
-          label: 'Удалить',
-          
-          
-        ),
-      ],
-    ),
-    child: _buildCartItemCard(context, item, cartProvider),
-  );
-}
+  Widget _buildSlidableCartItemCard(BuildContext context, MangaItem item, CartProvider cartProvider) {
+    return Slidable(
+      key: Key(item.title ?? ''),
+      endActionPane: ActionPane(
+        motion: ScrollMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (context) {
+              setState(() {
+                _dismissedItems.add(item);
+                cartProvider.removeFromCart(item);
+              });
+            },
+            backgroundColor: Colors.transparent,
+            foregroundColor: const Color(0xFFC84B31),
+            icon: Icons.delete,
+            label: 'Удалить',
+          ),
+        ],
+      ),
+      child: _buildCartItemCard(context, item, cartProvider),
+    );
+  }
 
   Widget _buildCartItemCard(BuildContext context, MangaItem item, CartProvider cartProvider) {
     return GestureDetector(
@@ -103,15 +100,15 @@ class _CartPageState extends State<CartPage> {
           context,
           MaterialPageRoute(
             builder: (context) => MangaDetailsScreen(
-              title: item.title,
-              price: item.price,
+              title: item.title ?? '',
+              price: item.price ?? '',
               index: cartProvider.cartItems.indexOf(item), 
-              additionalImages: item.additionalImages,
-              description: item.description,
-              format: item.format,
-              publisher: item.publisher,
-              imagePath: item.imagePath,
-              chapters: item.chapters,
+              additionalImages: item.additionalImages ?? [],
+              description: item.description ?? '',
+              format: item.format ?? '',
+              publisher: item.publisher ?? '',
+              imagePath: item.imagePath ?? '',
+              chapters: item.chapters ?? '',
               onDelete: () => cartProvider.removeFromCart(item),
             ),
           ),
@@ -137,7 +134,7 @@ class _CartPageState extends State<CartPage> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(28),
                       child: Image.network(
-                        item.imagePath,
+                        item.imagePath ?? '',
                         fit: BoxFit.cover,
                         width: 160,
                         height: 200,
@@ -154,7 +151,7 @@ class _CartPageState extends State<CartPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item.title,
+                              item.title ?? '',
                               style: const TextStyle(
                                 fontSize: 26.0,
                                 color: Color(0xFF2D4263),
@@ -162,7 +159,7 @@ class _CartPageState extends State<CartPage> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              item.format,
+                              item.format ?? '',
                               style: const TextStyle(
                                 fontSize: 20.0,
                                 color: Color(0xFF2D4263),
@@ -173,7 +170,7 @@ class _CartPageState extends State<CartPage> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              '${item.price} x ${cartProvider.getItemQuantity(item)} = ${int.parse(item.price.replaceAll(' рублей', '')) * cartProvider.getItemQuantity(item)} рублей',
+                              '${item.price ?? ''} x ${cartProvider.getItemQuantity(item)} = ${int.tryParse(item.price?.replaceAll(' рублей', '') ?? '0') ?? 0 * cartProvider.getItemQuantity(item)} рублей',
                               style: const TextStyle(
                                 fontSize: 24.0,
                                 color: Color(0xFF2D4263),
@@ -252,7 +249,7 @@ class _CartPageState extends State<CartPage> {
   Widget _buildTotalPrice(CartProvider cartProvider) {
     int totalPrice = 0;
     for (var item in cartProvider.cartItems) {
-      totalPrice += int.parse(item.price.replaceAll(' рублей', '')) * cartProvider.getItemQuantity(item);
+      totalPrice += (int.tryParse(item.price?.replaceAll(' рублей', '') ?? '0') ?? 0) * cartProvider.getItemQuantity(item);
     }
 
     return Container(

@@ -1,5 +1,5 @@
-// lib/models/manga_item.dart
 class MangaItem {
+  final int id;
   final String imagePath;
   final String title;
   final String description;
@@ -8,10 +8,10 @@ class MangaItem {
   final String format;
   final String publisher;
   final String shortDescription;
-  final String chapters; 
-  bool isHovered = false;
+  final String chapters;
 
   MangaItem({
+    required this.id,
     required this.imagePath,
     required this.title,
     required this.description,
@@ -20,17 +20,44 @@ class MangaItem {
     required this.format,
     required this.publisher,
     required this.shortDescription,
-    required this.chapters, // Добавляем поле для глав
+    required this.chapters,
   });
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is MangaItem &&
-          runtimeType == other.runtimeType &&
-          title == other.title &&
-          imagePath == other.imagePath;
+  factory MangaItem.fromJson(Map<String, dynamic> json) {
+    return MangaItem(
+      id: json['id'],
+      imagePath: _ensureImageFormat(json['imagePath'] ?? ''),
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      price: json['price'] ?? '',
+      additionalImages: List<String>.from(json['additionalImages']?.map((image) => _ensureImageFormat(image)) ?? []),
+      format: json['format'] ?? '',
+      publisher: json['publisher'] ?? '',
+      shortDescription: json['shortDescription'] ?? '',
+      chapters: json['chapters'] ?? '',
+    );
+  }
 
-  @override
-  int get hashCode => title.hashCode ^ imagePath.hashCode;
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'imagePath': imagePath,
+      'title': title,
+      'description': description,
+      'price': price,
+      'additionalImages': additionalImages,
+      'format': format,
+      'publisher': publisher,
+      'shortDescription': shortDescription,
+      'chapters': chapters,
+    };
+  }
+
+  static String _ensureImageFormat(String imagePath) {
+    if (imagePath.isEmpty) return '';
+    if (!imagePath.endsWith('.jpg') && !imagePath.endsWith('.png')) {
+      return '$imagePath.jpg'; // Добавляем формат изображения по умолчанию
+    }
+    return imagePath;
+  }
 }
